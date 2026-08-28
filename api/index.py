@@ -4,7 +4,7 @@ from flask import Flask, request
 import telebot
 
 # Vercel Environment Variable မရှိပါက ဒီထဲက Token ကို ယူပါမည်
-TOKEN = os.environ.get("BOT_TOKEN", "YOUR_BOT_TOKEN_HERE")
+TOKEN = os.environ.get("BOT_TOKEN", "8719357749:AAF1e8_tHQwfkfOi6iu_o112hQrz41q9mYU")
 GITHUB_DOWNLOAD_URL = "https://github.com/ayedotcosmos/DaiSeinBooster/releases/download/v1.0.0/app-release.apk"
 
 bot = telebot.TeleBot(TOKEN)
