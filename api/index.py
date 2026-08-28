@@ -1,25 +1,34 @@
 import os
+import threading
 from flask import Flask, request
 import telebot
 
-# ⚠️ မိမိ Bot Token ကို ဒီမှာ အတိအကျ ထည့်ပါ
-TOKEN = "8719357749:AAF1e8_tHQwfkfOi6iu_o112hQrz41q9mYU"
+# Vercel Environment Variable မရှိပါက ဒီထဲက Token ကို ယူပါမည်
+TOKEN = os.environ.get("BOT_TOKEN", "YOUR_BOT_TOKEN_HERE")
 GITHUB_DOWNLOAD_URL = "https://github.com/ayedotcosmos/DaiSeinBooster/releases/download/v1.0.0/app-release.apk"
 
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
 
-# Webhook Endpoint (Telegram မှ Request လက်ခံသည့်နေရာ)
+# Background မှာ Telegram Update ကို စပရိုဆက်လုပ်ပေးမည့် Function
+def process_update(json_string):
+    try:
+        update = telebot.types.Update.de_json(json_string)
+        bot.process_new_updates([update])
+    except Exception as e:
+        print(f"Error: {e}")
+
+# Telegram Webhook Endpoint
 @app.route('/api/webhook', methods=['POST'])
 def webhook():
     if request.is_json:
         json_string = request.get_data().decode('utf-8')
-        update = telebot.types.Update.de_json(json_string)
-        bot.process_new_updates([update])
+        # Telegram သို့ ချက်ချင်း 200 OK ပြန်ပေးပြီး စာအကြောင်းပြန်ခြင်းကို Background Thread တွင် ခိုင်းခြင်း
+        threading.Thread(target=process_update, args=(json_string,)).start()
         return 'OK', 200
     return 'Forbidden', 403
 
-# /start command
+# /start command handler
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     user_name = message.from_user.first_name
@@ -47,7 +56,7 @@ Dai Sein Booster သည် Root ပြုလုပ်ရန် မလိုဘ�
     
     bot.send_message(message.chat.id, caption_text, reply_markup=markup, parse_mode="Markdown")
 
-# Server နိုးနေသလား စစ်သည့် Home Page
+# Home route
 @app.route('/', methods=['GET'])
 def index():
     return "🤖 Dai Sein Booster Webhook Server is LIVE 24/7!", 200
