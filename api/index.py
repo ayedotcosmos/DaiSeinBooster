@@ -3,7 +3,7 @@ from flask import Flask, request
 import telebot
 
 # BotFather က ရထားသော Bot Token ကို ဒီမှာ ထည့်ပါ
-TOKEN = "YOUR_BOT_TOKEN_HERE"
+TOKEN = "8719357749:AAF1e8_tHQwfkfOi6iu_o112hQrz41q9mYU"
 GITHUB_DOWNLOAD_URL = "https://github.com/ayedotcosmos/DaiSeinBooster/releases/download/v1.0.0/app-release.apk"
 
 bot = telebot.TeleBot(TOKEN)
