@@ -2,23 +2,22 @@ import os
 from flask import Flask, request
 import telebot
 
-# BotFather က ရထားသော Bot Token ကို ဒီမှာ ထည့်ပါ
+# ⚠️ မိမိ Bot Token ကို ဒီမှာ အတိအကျ ထည့်ပါ
 TOKEN = "8719357749:AAF1e8_tHQwfkfOi6iu_o112hQrz41q9mYU"
 GITHUB_DOWNLOAD_URL = "https://github.com/ayedotcosmos/DaiSeinBooster/releases/download/v1.0.0/app-release.apk"
 
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
 
-# Webhook Endpoint
+# Webhook Endpoint (Telegram မှ Request လက်ခံသည့်နေရာ)
 @app.route('/api/webhook', methods=['POST'])
 def webhook():
-    if request.headers.get('content-type') == 'application/json':
+    if request.is_json:
         json_string = request.get_data().decode('utf-8')
         update = telebot.types.Update.de_json(json_string)
         bot.process_new_updates([update])
         return 'OK', 200
-    else:
-        return 'Forbidden', 403
+    return 'Forbidden', 403
 
 # /start command
 @bot.message_handler(commands=['start'])
@@ -48,7 +47,7 @@ Dai Sein Booster သည် Root ပြုလုပ်ရန် မလိုဘ�
     
     bot.send_message(message.chat.id, caption_text, reply_markup=markup, parse_mode="Markdown")
 
-# Home route
+# Server နိုးနေသလား စစ်သည့် Home Page
 @app.route('/', methods=['GET'])
 def index():
     return "🤖 Dai Sein Booster Webhook Server is LIVE 24/7!", 200
